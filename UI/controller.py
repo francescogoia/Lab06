@@ -7,6 +7,7 @@ class Controller:
         self._view = view
         # the model, which implements the logic of the program and holds the data
         self._model = model
+        self._model.initialize()
 
     def handle_hello(self, e):
         name = self._view.txt_name.value
@@ -15,3 +16,8 @@ class Controller:
             return
         self._view.txt_result.controls.append(ft.Text(f"Hello, {name}!"))
         self._view.update_page()
+
+    def fill_anno(self):
+        return self._model._years
+    def fill_brand(self):
+        return self._model._product_brands
