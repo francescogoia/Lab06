@@ -79,7 +79,7 @@ class DAO():
         cursore = connessione.cursor(dictionary=True)
         query = """select gds.Retailer_code , sum(gds.Unit_sale_price * gds.Quantity) as turnover, year (gds.`Date`), count(gds.Retailer_code) as nrRetailers, count(gds.Product_number) as nrProducts 
                     from go_daily_sales gds , go_products gp 
-                    where year (gds.`Date`)  = 2016 and gp.Product_brand = 'TrailChef' and gds.Retailer_code = 1258
+                    where year (gds.`Date`)  = %s and gp.Product_brand = %s and gds.Retailer_code = %s
                         and gp.Product_number = gds.Product_number   
                             """
         cursore.execute(query, (anno, brand, retailer_code,))
