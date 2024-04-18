@@ -1,4 +1,7 @@
+from time import strftime
+
 import flet as ft
+
 
 
 class Controller:
@@ -21,3 +24,21 @@ class Controller:
         return self._model._years
     def fill_brand(self):
         return self._model._product_brands
+
+    def get_top_vendite(self, e):
+        anno = self._view._dd_anno.value
+        brand = self._view._dd_brand.value
+        retailer = self._view._dd_retailer.value
+        result = self._model.get_top_vendite(anno, brand, retailer)
+        for i in result:
+            self._view.txt_result.controls.append(ft.Text(f"Data: {i[0].strftime("%y-%m-%d")}; Ricavo: {i[1]}; Retailer: {i[3]}; Product: {i[3]}"))
+        self._view.update_page()
+
+    def get_analisi_vendite(self, e):
+        anno = self._view._dd_anno.value
+        brand = self._view._dd_brand.value
+        retailer = self._view._dd_retailer.value
+        result = self._model.get_analisi_vendite(anno, brand, retailer)
+        for i in result:
+            self._view.txt_result.controls.append(ft.Text(f"{i}"))
+        self._view.update_page()

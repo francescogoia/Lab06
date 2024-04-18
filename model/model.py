@@ -23,4 +23,7 @@ class Model:
             self._product_brands.append(marchio['Product_brand'])
 
     def get_top_vendite(self, anno, brand, retailer_code):
-        DAO.get_top_vendite(anno, brand, retailer_code)
+        return DAO.get_top_vendite(anno, brand, retailer_code)
+
+    def get_analisi_vendite(self, anno, brand, retailer_code):
+        return DAO.get_analisi_vendite(anno, brand, retailer_code)

@@ -40,7 +40,8 @@ class DAO():
         connessione = DBConnect.get_connection()
         cursore = connessione.cursor(dictionary=True)
         query_brand = """select * 
-                                from go_retailers gr """
+                                from go_retailers gr 
+                                order by gr.Retailer_name"""
         cursore.execute(query_brand)
         rows = cursore.fetchall()
         diz_retailer = {}
@@ -55,7 +56,7 @@ class DAO():
     def get_top_vendite(anno, brand, retailer_code):
         connessione = DBConnect.get_connection()
         cursore = connessione.cursor(dictionary=True)
-        query = """select *, (gds.Unit_sale_price * gds.Quantity) as Ricavo
+        query = """select gds.`Date`,(gds.Unit_sale_price * gds.Quantity) as Ricavo, Retailer_code, gds.Product_number 
                     from go_daily_sales gds, go_products gp 
                     where year (gds.`Date`)  = %s and gp.Product_brand = %s and gds.Retailer_code = %s
                         and gp.Product_number = gds.Product_number 
@@ -66,10 +67,29 @@ class DAO():
         rows = cursore.fetchall()
         list_risultato = []
         for row in rows:
-            r = row['Date'], row['Ricavo'], row['Retailer_code'], row['Product_number']
+            r = row['Date'], float(row['Ricavo']), row['Retailer_code'], row['Product_number']
             list_risultato.append(r)
             print(r)
+        return list_risultato
 
+
+    @staticmethod
+    def get_analisi_vendite(anno, brand, retailer_code):
+        connessione = DBConnect.get_connection()
+        cursore = connessione.cursor(dictionary=True)
+        query = """select gds.Retailer_code , sum(gds.Unit_sale_price * gds.Quantity) as turnover, year (gds.`Date`), count(gds.Retailer_code) as nrRetailers, count(gds.Product_number) as nrProducts 
+                    from go_daily_sales gds , go_products gp 
+                    where year (gds.`Date`)  = 2016 and gp.Product_brand = 'TrailChef' and gds.Retailer_code = 1258
+                        and gp.Product_number = gds.Product_number   
+                            """
+        cursore.execute(query, (anno, brand, retailer_code,))
+        rows = cursore.fetchall()
+        list_risultato = []
+        for row in rows:
+            r = float(row['turnover'])
+            list_risultato.append(r)
+            print(r)
+        return list_risultato
 
 
 

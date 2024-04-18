@@ -35,7 +35,7 @@ class View(ft.UserControl):
                       alignment=ft.MainAxisAlignment.CENTER)
         self._page.controls.append(row1)
         ## row2
-        self._btn_top_vendite = ft.ElevatedButton(text="Top vendite")
+        self._btn_top_vendite = ft.ElevatedButton(text="Top vendite", on_click= self._controller.get_top_vendite)
         self._btn_analizza_vendite = ft.ElevatedButton(text="Analizza vendite")
         row2 = ft.Row([self._btn_top_vendite, self._btn_analizza_vendite], alignment=ft.MainAxisAlignment.CENTER)
 
