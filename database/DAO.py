@@ -77,12 +77,21 @@ class DAO():
     def get_analisi_vendite(anno, brand, retailer_code):
         connessione = DBConnect.get_connection()
         cursore = connessione.cursor(dictionary=True)
-        query = """select gds.Retailer_code , sum(gds.Unit_sale_price * gds.Quantity) as turnover, year (gds.`Date`), count(gds.Retailer_code) as nrRetailers, count(gds.Product_number) as nrProducts 
-                    from go_daily_sales gds , go_products gp 
-                    where year (gds.`Date`)  = %s and gp.Product_brand = %s and gds.Retailer_code = %s
-                        and gp.Product_number = gds.Product_number   
-                            """
-        cursore.execute(query, (anno, brand, retailer_code,))
+        query = """select tab1.count_key_combinations as num_sales, year (gds.`Date`) as year, gds.Retailer_code,
+                    sum(gds.Unit_sale_price * gds.Quantity) as turnover,
+                    count(gds.Retailer_code) as nrRetailers, count (distinct gds.Product_number) as nrProducts
+                from go_daily_sales gds , go_products gp, (select count(*) as count_key_combinations
+                                                        from go_daily_sales gds , go_products gp
+                                                        where year (gds.`Date`)  = COALESCE(%s, brand) 
+                                                            and gp.Product_brand = COALESCE(%s, brand)
+                                                            and gds.Retailer_code = COALESCE(%s, retailer_code)
+                                                            and gp.Product_number = gds.Product_number) as tab1
+                where year (gds.`Date`)  = COALESCE(%s, anno) and gp.Product_brand = COALESCE(%s, brand) and
+                    gds.Retailer_code = COALESCE(%s, retailer_code)
+                    and gp.Product_number = gds.Product_number 
+                group by gds.Retailer_code
+                """
+        cursore.execute(query, (anno, brand, retailer_code, anno, brand, retailer_code,))
         rows = cursore.fetchall()
         list_risultato = []
         for row in rows:
@@ -96,3 +105,4 @@ class DAO():
 if __name__ == "__main__":
     DAO.get_top_vendite(2016, 'TrailChef', 1258)
     DAO.get_retailers()
+    DAO.get_analisi_vendite(2016, 'TrailChef', 1258)
