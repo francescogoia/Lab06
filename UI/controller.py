@@ -40,5 +40,9 @@ class Controller:
         retailer = self._view._dd_retailer.value
         result = self._model.get_analisi_vendite(anno, brand, retailer)
         for i in result:
-            self._view.txt_result.controls.append(ft.Text(f"{i}"))
+            self._view.txt_result.controls.append(ft.Text(f"Statistiche vendite: \n"
+                                                          f"Giro d'affari: {i[1]} \n"
+                                                          f"Numero vendite: {i[0]} \n"
+                                                          f"Numero retailer coinvolti: {i[2]} \n"
+                                                          f"Numero di prodotti coinvolti: {i[3]}"))
         self._view.update_page()

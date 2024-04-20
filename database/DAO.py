@@ -58,7 +58,9 @@ class DAO():
         cursore = connessione.cursor(dictionary=True)
         query = """select gds.`Date`,(gds.Unit_sale_price * gds.Quantity) as Ricavo, Retailer_code, gds.Product_number 
                     from go_daily_sales gds, go_products gp 
-                    where year (gds.`Date`)  = %s and gp.Product_brand = %s and gds.Retailer_code = %s
+                    where year (gds.`Date`)  = COALESCE(%s, year (gds.`Date`))
+                        and gp.Product_brand = COALESCE(%s, gp.Product_brand)
+                        and gds.Retailer_code = COALESCE(%s, gds.Retailer_code)
                         and gp.Product_number = gds.Product_number 
                     order by -(gds.Unit_sale_price * gds.Quantity)
                     limit 5    
@@ -77,25 +79,28 @@ class DAO():
     def get_analisi_vendite(anno, brand, retailer_code):
         connessione = DBConnect.get_connection()
         cursore = connessione.cursor(dictionary=True)
-        query = """select tab1.count_key_combinations as num_sales, year (gds.`Date`) as year, gds.Retailer_code,
+        query = """
+                select tab1.count_key_combinations as num_sales,
                     sum(gds.Unit_sale_price * gds.Quantity) as turnover,
-                    count(gds.Retailer_code) as nrRetailers, count (distinct gds.Product_number) as nrProducts
-                from go_daily_sales gds , go_products gp, (select count(*) as count_key_combinations
-                                                        from go_daily_sales gds , go_products gp
-                                                        where year (gds.`Date`)  = COALESCE(%s, brand) 
-                                                            and gp.Product_brand = COALESCE(%s, brand)
-                                                            and gds.Retailer_code = COALESCE(%s, retailer_code)
-                                                            and gp.Product_number = gds.Product_number) as tab1
-                where year (gds.`Date`)  = COALESCE(%s, anno) and gp.Product_brand = COALESCE(%s, brand) and
-                    gds.Retailer_code = COALESCE(%s, retailer_code)
+                    count(distinct(gds.Retailer_code)) as nrRetailers,
+                    count(distinct(gds.Product_number)) as nrProducts
+                from go_daily_sales gds , go_products gp,
+                        (select count(*) as count_key_combinations
+                        from go_daily_sales gds , go_products gp
+                        where year (gds.`Date`)  = COALESCE(%s, year (gds.`Date`)) 
+                              and gp.Product_brand = COALESCE(%s, gp.Product_brand)
+                              and gds.Retailer_code = COALESCE(%s, gds.Retailer_code)
+                              and gp.Product_number = gds.Product_number) as tab1
+                where year (gds.`Date`)  = COALESCE(%s, year (gds.`Date`))
+                    and gp.Product_brand = COALESCE(%s, gp.Product_brand)
+                    and gds.Retailer_code = COALESCE(%s, gds.Retailer_code)
                     and gp.Product_number = gds.Product_number 
-                group by gds.Retailer_code
                 """
         cursore.execute(query, (anno, brand, retailer_code, anno, brand, retailer_code,))
         rows = cursore.fetchall()
         list_risultato = []
         for row in rows:
-            r = float(row['turnover'])
+            r = row['num_sales'], float(row['turnover']), row['nrRetailers'], row['nrProducts']
             list_risultato.append(r)
             print(r)
         return list_risultato
@@ -104,5 +109,5 @@ class DAO():
 
 if __name__ == "__main__":
     DAO.get_top_vendite(2016, 'TrailChef', 1258)
-    DAO.get_retailers()
-    DAO.get_analisi_vendite(2016, 'TrailChef', 1258)
+    # DAO.get_retailers()
+    # DAO.get_analisi_vendite(None, None, None)
