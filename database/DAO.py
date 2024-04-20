@@ -68,8 +68,13 @@ class DAO():
         cursore.execute(query, (anno, brand, retailer_code,))
         rows = cursore.fetchall()
         list_risultato = []
-        for row in rows:
-            list_risultato.append(row)
+        if len(rows) == 0:
+            list_risultato.append("Nessuna vendita")
+            print("Nessuna vendita")
+        else:
+            for row in rows:
+                list_risultato.append(row)
+
         return list_risultato
 
 
@@ -100,9 +105,10 @@ class DAO():
         if rows[0]['num_sales'] == None:
             list_risultato.append("Nessuna vendita")
             print("Nessuna vendita")
-        r = rows[0]['num_sales'], rows[0]['turnover'], rows[0]['nrRetailers'], rows[0]['nrProducts']
-        list_risultato.append(r)
-        print(r)
+        else:
+            r = rows[0]['num_sales'], rows[0]['turnover'], rows[0]['nrRetailers'], rows[0]['nrProducts']
+            list_risultato.append(r)
+            print(r)
         return list_risultato
 
 

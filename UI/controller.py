@@ -31,7 +31,10 @@ class Controller:
         retailer = self._view._dd_retailer.value
         result = self._model.get_top_vendite(anno, brand, retailer)
         for i in result:
-            self._view.txt_result.controls.append(ft.Text(f"Data: {i['Date']}; "
+            if i == "Nessuna vendita":
+                    self._view.txt_result.controls.append(ft.Text("Nessuna vendita"))
+            else:
+                self._view.txt_result.controls.append(ft.Text(f"Data: {i['Date']}; "
                                                           f"Ricavo: {i['Ricavo']}; "
                                                           f"Retailer: {i['Retailer_code']}; "
                                                           f"Product: {i['Product_number']}"))
