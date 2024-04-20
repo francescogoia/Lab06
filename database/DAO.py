@@ -69,9 +69,7 @@ class DAO():
         rows = cursore.fetchall()
         list_risultato = []
         for row in rows:
-            r = row['Date'], float(row['Ricavo']), row['Retailer_code'], row['Product_number']
-            list_risultato.append(r)
-            print(r)
+            list_risultato.append(row)
         return list_risultato
 
 
@@ -99,15 +97,17 @@ class DAO():
         cursore.execute(query, (anno, brand, retailer_code, anno, brand, retailer_code,))
         rows = cursore.fetchall()
         list_risultato = []
-        for row in rows:
-            r = row['num_sales'], float(row['turnover']), row['nrRetailers'], row['nrProducts']
-            list_risultato.append(r)
-            print(r)
+        if rows[0]['num_sales'] == None:
+            list_risultato.append("Nessuna vendita")
+            print("Nessuna vendita")
+        r = rows[0]['num_sales'], rows[0]['turnover'], rows[0]['nrRetailers'], rows[0]['nrProducts']
+        list_risultato.append(r)
+        print(r)
         return list_risultato
 
 
 
 if __name__ == "__main__":
-    DAO.get_top_vendite(2016, 'TrailChef', 1258)
+    DAO.get_top_vendite(2016, 'Seeker', 1111)
     # DAO.get_retailers()
-    # DAO.get_analisi_vendite(None, None, None)
+    # DAO.get_analisi_vendite(None, 'Seeker', 1479)

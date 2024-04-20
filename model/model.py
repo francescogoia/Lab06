@@ -23,7 +23,19 @@ class Model:
             self._product_brands.append(marchio['Product_brand'])
 
     def get_top_vendite(self, anno, brand, retailer_code):
+        if anno == "Nessun filtro":
+            anno = None
+        if brand == "Nessun filtro":
+            brand = None
+        if retailer_code == "Nessun filtro":
+            retailer_code = None
         return DAO.get_top_vendite(anno, brand, retailer_code)
 
     def get_analisi_vendite(self, anno, brand, retailer_code):
+        if anno == "Nessun filtro":
+            anno = None
+        if brand == "Nessun filtro":
+            brand = None
+        if retailer_code == "Nessun filtro":
+            retailer_code = None
         return DAO.get_analisi_vendite(anno, brand, retailer_code)

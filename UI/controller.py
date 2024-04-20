@@ -31,7 +31,10 @@ class Controller:
         retailer = self._view._dd_retailer.value
         result = self._model.get_top_vendite(anno, brand, retailer)
         for i in result:
-            self._view.txt_result.controls.append(ft.Text(f"Data: {i[0].strftime("%y-%m-%d")}; Ricavo: {i[1]}; Retailer: {i[3]}; Product: {i[3]}"))
+            self._view.txt_result.controls.append(ft.Text(f"Data: {i['Date']}; "
+                                                          f"Ricavo: {i['Ricavo']}; "
+                                                          f"Retailer: {i['Retailer_code']}; "
+                                                          f"Product: {i['Product_number']}"))
         self._view.update_page()
 
     def get_analisi_vendite(self, e):
@@ -40,9 +43,13 @@ class Controller:
         retailer = self._view._dd_retailer.value
         result = self._model.get_analisi_vendite(anno, brand, retailer)
         for i in result:
-            self._view.txt_result.controls.append(ft.Text(f"Statistiche vendite: \n"
+            if i == "Nessun risultato":
+                self._view.txt_result.controls.append(ft.Text("Nessun risultato"))
+            else:
+                self._view.txt_result.controls.append(ft.Text(f"Statistiche vendite: \n"
                                                           f"Giro d'affari: {i[1]} \n"
                                                           f"Numero vendite: {i[0]} \n"
                                                           f"Numero retailer coinvolti: {i[2]} \n"
                                                           f"Numero di prodotti coinvolti: {i[3]}"))
         self._view.update_page()
+
