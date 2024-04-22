@@ -74,7 +74,8 @@ class DAO():
         else:
             for row in rows:
                 list_risultato.append(row)
-
+        cursore.close()
+        connessione.close()
         return list_risultato
 
 
@@ -109,6 +110,8 @@ class DAO():
             r = rows[0]['num_sales'], rows[0]['turnover'], rows[0]['nrRetailers'], rows[0]['nrProducts']
             list_risultato.append(r)
             print(r)
+        cursore.close()
+        connessione.close()
         return list_risultato
 
 
